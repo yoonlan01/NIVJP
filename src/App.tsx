@@ -53,7 +53,7 @@ const Navbar = ({ currentPage, setPage }: { currentPage: Page, setPage: (p: Page
             <div className="w-10 h-10 bg-deep-navy rounded-lg flex items-center justify-center text-soft-gold">
               <Book size={24} />
             </div>
-            <span className="text-xl font-serif font-bold text-deep-navy hidden sm:block">NIV Syntax Study</span>
+            <span className="text-xl font-serif font-bold text-deep-navy hidden sm:block">NIV 요한복음 플러스 잠언</span>
           </div>
 
           {/* Desktop Nav */}
@@ -121,7 +121,7 @@ const Footer = ({ setPage }: { setPage: (p: Page) => void }) => (
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Book className="text-soft-gold" size={24} />
-            <span className="text-xl font-serif font-bold">NIV Syntax Study</span>
+            <span className="text-xl font-serif font-bold">NIV 요한복음 플러스 잠언</span>
           </div>
           <p className="text-white/60 text-sm leading-relaxed">
             Deepen your understanding of the Word while mastering English syntax. 
@@ -145,7 +145,7 @@ const Footer = ({ setPage }: { setPage: (p: Page) => void }) => (
         </div>
       </div>
       <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-white/40">
-        © 2026 NIV Bible Syntax & Wisdom Study Platform. All rights reserved.
+        © 2026 NIV 요한복음 플러스 잠언 Study Platform. All rights reserved.
       </div>
     </div>
   </footer>
