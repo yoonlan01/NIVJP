@@ -96,5 +96,85 @@ export const BIBLE_DATA: BibleVerse[] = [
       { word: "Lean", meaning: "기대다, 의지하다", part_of_speech: "verb" },
       { word: "Understanding", meaning: "명철, 이해", part_of_speech: "noun" }
     ]
+  },
+  {
+    id: "john-8-12",
+    book: "John",
+    chapter: 8,
+    verse: 12,
+    text: "When Jesus spoke again to the people, he said, 'I am the light of the world. Whoever follows me will never walk in darkness, but will have the light of life.'",
+    chunks: [
+      { text: "When Jesus spoke again", translation: "예수께서 다시 말씀하셨을 때", grammar_note: "Temporal clause." },
+      { text: "to the people", translation: "사람들에게", grammar_note: "Prepositional phrase." },
+      { text: "he said", translation: "그가 말씀하셨다", grammar_note: "Main clause subject-verb." },
+      { text: "I am the light of the world", translation: "나는 세상의 빛이다", grammar_note: "I am (Ego Eimi) statement." },
+      { text: "Whoever follows me", translation: "나를 따르는 자는 누구든지", grammar_note: "Relative clause as subject." },
+      { text: "will never walk in darkness", translation: "결코 어둠 속에 다니지 아니하고", grammar_note: "Future tense with negative 'never'." },
+      { text: "but will have the light of life", translation: "생명의 빛을 얻으리라", grammar_note: "Contrastive conjunction 'but'." }
+    ],
+    syntax_pattern: ["Relative Clause", "Contrast"],
+    vocabulary: [
+      { word: "Light", meaning: "빛", part_of_speech: "noun" },
+      { word: "Darkness", meaning: "어둠", part_of_speech: "noun" },
+      { word: "Follow", meaning: "따르다", part_of_speech: "verb" }
+    ]
+  },
+  {
+    id: "john-12-24",
+    book: "John",
+    chapter: 12,
+    verse: 24,
+    text: "Very truly I tell you, unless a kernel of wheat falls to the ground and dies, it remains only a single seed. But if it dies, it produces many seeds.",
+    chunks: [
+      { text: "Very truly I tell you", translation: "진실로 진실로 너희에게 이르노니", grammar_note: "Emphasis phrase." },
+      { text: "unless a kernel of wheat", translation: "만약 밀알 하나가", grammar_note: "Conditional conjunction 'unless'." },
+      { text: "falls to the ground and dies", translation: "땅에 떨어져 죽지 아니하면", grammar_note: "Compound predicate." },
+      { text: "it remains only a single seed", translation: "한 알 그대로 있고", grammar_note: "Result clause." },
+      { text: "But if it dies", translation: "죽으면", grammar_note: "Conditional 'if'." },
+      { text: "it produces many seeds", translation: "많은 열매를 맺느니라", grammar_note: "Result clause." }
+    ],
+    syntax_pattern: ["Conditional"],
+    vocabulary: [
+      { word: "Kernel", meaning: "알갱이, 낟알", part_of_speech: "noun" },
+      { word: "Produce", meaning: "생산하다, 맺다", part_of_speech: "verb" }
+    ]
+  },
+  {
+    id: "proverbs-8-11",
+    book: "Proverbs",
+    chapter: 8,
+    verse: 11,
+    text: "for wisdom is more precious than rubies, and nothing you desire can compare with her.",
+    chunks: [
+      { text: "for wisdom is", translation: "지혜는 ~이기 때문이다", grammar_note: "Conjunction 'for' meaning 'because'." },
+      { text: "more precious than rubies", translation: "진주보다 더 귀하다", grammar_note: "Comparative structure." },
+      { text: "and nothing you desire", translation: "너가 바라는 어떤 것도", grammar_note: "Negative subject with relative clause." },
+      { text: "can compare with her", translation: "그녀(지혜)와 비교할 수 없다", grammar_note: "Verb phrase 'compare with'." }
+    ],
+    syntax_pattern: ["Comparative"],
+    vocabulary: [
+      { word: "Precious", meaning: "귀중한", part_of_speech: "adjective" },
+      { word: "Compare", meaning: "비교하다", part_of_speech: "verb" },
+      { word: "Desire", meaning: "바라다, 욕망하다", part_of_speech: "verb" }
+    ]
+  },
+  {
+    id: "proverbs-20-15",
+    book: "Proverbs",
+    chapter: 20,
+    verse: 15,
+    text: "Gold there is, and rubies in abundance, but lips that speak knowledge are a rare jewel.",
+    chunks: [
+      { text: "Gold there is", translation: "금도 있고", grammar_note: "Inversion for poetic effect." },
+      { text: "and rubies in abundance", translation: "진주도 많거니와", grammar_note: "Prepositional phrase 'in abundance'." },
+      { text: "but lips that speak knowledge", translation: "지식을 말하는 입술은", grammar_note: "Relative clause 'that speak knowledge'." },
+      { text: "are a rare jewel", translation: "귀한 보배니라", grammar_note: "Subject-Verb-Complement." }
+    ],
+    syntax_pattern: ["Inversion", "Relative Clause"],
+    vocabulary: [
+      { word: "Abundance", meaning: "풍부함", part_of_speech: "noun" },
+      { word: "Rare", meaning: "희귀한", part_of_speech: "adjective" },
+      { word: "Jewel", meaning: "보석", part_of_speech: "noun" }
+    ]
   }
 ];

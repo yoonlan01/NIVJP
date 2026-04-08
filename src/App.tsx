@@ -154,14 +154,43 @@ const Footer = ({ setPage }: { setPage: (p: Page) => void }) => (
 // --- Pages ---
 
 const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
-  // Get Verse of the Day based on current date
-  const getVerseOfTheDay = () => {
+  // Get Verse of the Day based on current date and specific logic
+  const getMeditationVerses = () => {
     const today = new Date();
-    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
-    return BIBLE_DATA[dayOfYear % BIBLE_DATA.length];
+    const day = today.getDate(); // 1-31
+    
+    // John Logic:
+    // 1-21: John [Day]
+    // 22-30: John [Day - 10] (12-20)
+    // 31: Fallback to John 1 or 21
+    let johnChapter = day;
+    if (day >= 22 && day <= 30) {
+      johnChapter = day - 10;
+    } else if (day === 31) {
+      johnChapter = 1; // Fallback
+    }
+
+    // Proverbs Logic:
+    // 1-31: Proverbs [Day]
+    const proverbsChapter = day;
+
+    const findVerse = (book: string, chapter: number) => {
+      // Try to find exact chapter
+      let verse = BIBLE_DATA.find(v => v.book === book && v.chapter === chapter);
+      // If not found, find any from the same book
+      if (!verse) {
+        verse = BIBLE_DATA.find(v => v.book === book);
+      }
+      return verse || BIBLE_DATA[0];
+    };
+
+    return {
+      john: findVerse('John', johnChapter),
+      proverbs: findVerse('Proverbs', proverbsChapter)
+    };
   };
 
-  const dailyVerse = getVerseOfTheDay();
+  const { john: johnVerse, proverbs: proverbsVerse } = getMeditationVerses();
 
   return (
     <div className="flex flex-col">
@@ -212,49 +241,75 @@ const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
       {/* Daily Meditation Section */}
       <section className="py-12 bg-off-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-soft-gold/20 relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Sparkles size={120} className="text-soft-gold" />
-            </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-soft-gold rounded-full flex items-center justify-center text-white">
-                  <Bookmark size={20} />
-                </div>
-                <h2 className="text-xl font-bold text-deep-navy uppercase tracking-widest">오늘의 묵상 말씀</h2>
-                <div className="h-px flex-1 bg-soft-gold/20 ml-4"></div>
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* John Meditation */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex-1 bg-white rounded-3xl p-8 shadow-xl border border-soft-gold/20 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <Sparkles size={80} className="text-soft-gold" />
               </div>
-
-              <div className="max-w-4xl">
-                <blockquote className="bible-text text-2xl md:text-3xl italic text-deep-navy mb-8 leading-relaxed">
-                  "{dailyVerse.text}"
-                </blockquote>
-                
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="text-soft-gold font-serif font-bold text-lg">
-                      {dailyVerse.book} {dailyVerse.chapter}:{dailyVerse.verse}
-                    </div>
-                    <div className="h-4 w-px bg-deep-navy/10"></div>
-                    <div className="text-deep-navy/40 text-sm font-medium">NIV Version</div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-deep-navy rounded-full flex items-center justify-center text-white">
+                    <Bookmark size={16} />
                   </div>
-                  
+                  <h2 className="text-sm font-bold text-deep-navy uppercase tracking-widest">오늘의 요한복음 묵상</h2>
+                </div>
+                <blockquote className="font-serif italic text-xl text-deep-navy mb-6 leading-relaxed min-h-[100px]">
+                  "{johnVerse.text}"
+                </blockquote>
+                <div className="flex items-center justify-between">
+                  <div className="text-soft-gold font-serif font-bold">
+                    {johnVerse.book} {johnVerse.chapter}:{johnVerse.verse}
+                  </div>
                   <button 
                     onClick={() => setPage('study')}
-                    className="flex items-center gap-2 text-deep-navy font-bold hover:text-soft-gold transition-colors group"
+                    className="text-xs font-bold text-deep-navy/40 hover:text-soft-gold transition-colors flex items-center gap-1"
                   >
-                    이 말씀으로 공부하기 <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    학습하기 <ChevronRight size={14} />
                   </button>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* Proverbs Meditation */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex-1 bg-white rounded-3xl p-8 shadow-xl border border-soft-gold/20 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <Sparkles size={80} className="text-soft-gold" />
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-soft-gold rounded-full flex items-center justify-center text-white">
+                    <Bookmark size={16} />
+                  </div>
+                  <h2 className="text-sm font-bold text-deep-navy uppercase tracking-widest">오늘의 잠언 묵상</h2>
+                </div>
+                <blockquote className="font-serif italic text-xl text-deep-navy mb-6 leading-relaxed min-h-[100px]">
+                  "{proverbsVerse.text}"
+                </blockquote>
+                <div className="flex items-center justify-between">
+                  <div className="text-soft-gold font-serif font-bold">
+                    {proverbsVerse.book} {proverbsVerse.chapter}:{proverbsVerse.verse}
+                  </div>
+                  <button 
+                    onClick={() => setPage('study')}
+                    className="text-xs font-bold text-deep-navy/40 hover:text-soft-gold transition-colors flex items-center gap-1"
+                  >
+                    학습하기 <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
