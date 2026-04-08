@@ -200,10 +200,17 @@ const HomePage = ({ setPage, onSelectVerse }: { setPage: (p: Page) => void, onSe
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
+      <section className="relative py-24 md:py-40 overflow-hidden">
+        {/* Vineyard Background Image */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-soft-gold/5 rounded-l-full blur-3xl transform translate-x-1/4"></div>
-          <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-deep-navy/5 rounded-full blur-3xl transform -translate-x-1/4"></div>
+          <img 
+            src="https://images.unsplash.com/photo-1506306573024-89251829c73a?auto=format&fit=crop&q=80&w=1920" 
+            alt="Vineyard Background"
+            className="w-full h-full object-cover opacity-20"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-off-white/80 via-off-white/40 to-off-white"></div>
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-soft-gold/10 rounded-l-full blur-3xl transform translate-x-1/4"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -244,8 +251,16 @@ const HomePage = ({ setPage, onSelectVerse }: { setPage: (p: Page) => void, onSe
       </section>
 
       {/* Daily Meditation Section */}
-      <section className="py-12 bg-off-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16 bg-off-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
+          <img 
+            src="https://images.unsplash.com/photo-1539667468225-eebb663053e6?auto=format&fit=crop&q=80&w=1000" 
+            alt="Vineyard Texture"
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col md:flex-row gap-8">
             {/* John Meditation */}
             <motion.div 
@@ -319,8 +334,16 @@ const HomePage = ({ setPage, onSelectVerse }: { setPage: (p: Page) => void, onSe
       </section>
 
       {/* Courses Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 opacity-[0.05] pointer-events-none transform translate-x-1/4 translate-y-1/4">
+          <img 
+            src="https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?auto=format&fit=crop&q=80&w=800" 
+            alt="Grapes"
+            className="w-full h-full object-contain"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">선택 가능한 코스</h2>
             <div className="w-20 h-1 bg-soft-gold mx-auto"></div>
@@ -367,8 +390,16 @@ const HomePage = ({ setPage, onSelectVerse }: { setPage: (p: Page) => void, onSe
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-deep-navy text-white text-center">
-        <div className="max-w-4xl mx-auto px-4">
+      <section className="py-24 bg-deep-navy text-white text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img 
+            src="https://images.unsplash.com/photo-1532331984402-b07d84f21b27?auto=format&fit=crop&q=80&w=1920" 
+            alt="Vineyard Night"
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
           <h2 className="text-3xl md:text-5xl font-serif font-bold mb-8">당신의 지성과 영성을 깨우는 시간</h2>
           <p className="text-white/70 text-lg mb-10 leading-relaxed">
             지금 바로 무료로 시작하고, 매일 아침 말씀과 함께하는 영어 공부 습관을 만들어보세요.
