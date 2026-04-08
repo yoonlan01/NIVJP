@@ -407,9 +407,12 @@ const StudyPage = ({ initialVerseId, onSave }: { initialVerseId: string | null, 
     window.speechSynthesis.cancel();
     
     const voices = window.speechSynthesis.getVoices();
-    // Prefer British English for "BBC Anchor" feel
-    const britishVoice = voices.find(v => v.lang === 'en-GB' || v.lang.includes('GB')) || 
-                         voices.find(v => v.lang.includes('en'));
+    // Prioritize high-quality British English voices for a "BBC Anchor" feel
+    const britishVoice = 
+      voices.find(v => (v.lang === 'en-GB' || v.lang.includes('GB')) && v.name.includes('Google')) ||
+      voices.find(v => (v.lang === 'en-GB' || v.lang.includes('GB')) && v.name.includes('Premium')) ||
+      voices.find(v => v.lang === 'en-GB' || v.lang.includes('GB')) ||
+      voices.find(v => v.lang.includes('en'));
 
     let currentIdx = 0;
     
@@ -418,16 +421,19 @@ const StudyPage = ({ initialVerseId, onSave }: { initialVerseId: string | null, 
       if (currentIdx >= selectedVerse.chunks.length) {
         currentIdx = 0;
         setAudioProgress(0);
-        // Pause for 1 second before repeating the whole verse
-        setTimeout(speakNextChunk, 1000);
+        // Pause for 1.2 seconds before repeating for a more natural transition
+        setTimeout(speakNextChunk, 1200);
         return;
       }
 
       const chunk = selectedVerse.chunks[currentIdx];
       const utterance = new SpeechSynthesisUtterance(chunk.text);
       if (britishVoice) utterance.voice = britishVoice;
-      utterance.rate = 0.85; // Academic, clear pace
+      
+      // Natural reading speed (1.0 is standard, slightly adjusted for clarity)
+      utterance.rate = 1.0; 
       utterance.pitch = 1.0;
+      utterance.volume = 1.0;
 
       utterance.onstart = () => {
         setActiveChunkIndex(currentIdx);
