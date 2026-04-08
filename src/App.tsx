@@ -153,7 +153,7 @@ const Footer = ({ setPage }: { setPage: (p: Page) => void }) => (
 
 // --- Pages ---
 
-const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
+const HomePage = ({ setPage, onSelectVerse }: { setPage: (p: Page) => void, onSelectVerse: (verseId: string) => void }) => {
   // Get Verse of the Day based on current date and specific logic
   const getMeditationVerses = () => {
     const today = new Date();
@@ -191,6 +191,11 @@ const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
   };
 
   const { john: johnVerse, proverbs: proverbsVerse } = getMeditationVerses();
+
+  const handleStudyVerse = (verseId: string) => {
+    onSelectVerse(verseId);
+    setPage('study');
+  };
 
   return (
     <div className="flex flex-col">
@@ -267,7 +272,7 @@ const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
                     {johnVerse.book} {johnVerse.chapter}:{johnVerse.verse}
                   </div>
                   <button 
-                    onClick={() => setPage('study')}
+                    onClick={() => handleStudyVerse(johnVerse.id)}
                     className="text-xs font-bold text-deep-navy/40 hover:text-soft-gold transition-colors flex items-center gap-1"
                   >
                     학습하기 <ChevronRight size={14} />
@@ -301,7 +306,7 @@ const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
                     {proverbsVerse.book} {proverbsVerse.chapter}:{proverbsVerse.verse}
                   </div>
                   <button 
-                    onClick={() => setPage('study')}
+                    onClick={() => handleStudyVerse(proverbsVerse.id)}
                     className="text-xs font-bold text-deep-navy/40 hover:text-soft-gold transition-colors flex items-center gap-1"
                   >
                     학습하기 <ChevronRight size={14} />
@@ -380,43 +385,91 @@ const HomePage = ({ setPage }: { setPage: (p: Page) => void }) => {
   );
 };
 
-const StudyPage = ({ onSave }: { onSave: (item: SavedItem) => void }) => {
-  const [selectedVerse, setSelectedVerse] = useState<BibleVerse>(BIBLE_DATA[0]);
+const StudyPage = ({ initialVerseId, onSave }: { initialVerseId: string | null, onSave: (item: SavedItem) => void }) => {
+  const [selectedVerse, setSelectedVerse] = useState<BibleVerse>(
+    BIBLE_DATA.find(v => v.id === initialVerseId) || BIBLE_DATA[0]
+  );
+
+  useEffect(() => {
+    if (initialVerseId) {
+      const verse = BIBLE_DATA.find(v => v.id === initialVerseId);
+      if (verse) setSelectedVerse(verse);
+    }
+  }, [initialVerseId]);
   const [activeChunkIndex, setActiveChunkIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
 
-  // Audio simulation
+  // Real TTS with British English Voice
+  const speakVerse = () => {
+    if (!window.speechSynthesis) return;
+    
+    window.speechSynthesis.cancel();
+    
+    const voices = window.speechSynthesis.getVoices();
+    // Prefer British English for "BBC Anchor" feel
+    const britishVoice = voices.find(v => v.lang === 'en-GB' || v.lang.includes('GB')) || 
+                         voices.find(v => v.lang.includes('en'));
+
+    let currentIdx = 0;
+    
+    const speakNextChunk = () => {
+      // If we reached the end, loop back to the beginning
+      if (currentIdx >= selectedVerse.chunks.length) {
+        currentIdx = 0;
+        setAudioProgress(0);
+        // Pause for 1 second before repeating the whole verse
+        setTimeout(speakNextChunk, 1000);
+        return;
+      }
+
+      const chunk = selectedVerse.chunks[currentIdx];
+      const utterance = new SpeechSynthesisUtterance(chunk.text);
+      if (britishVoice) utterance.voice = britishVoice;
+      utterance.rate = 0.85; // Academic, clear pace
+      utterance.pitch = 1.0;
+
+      utterance.onstart = () => {
+        setActiveChunkIndex(currentIdx);
+        setAudioProgress((currentIdx / selectedVerse.chunks.length) * 100);
+      };
+
+      utterance.onend = () => {
+        currentIdx++;
+        // Small pause between chunks for natural flow
+        setTimeout(speakNextChunk, 100);
+      };
+
+      utterance.onerror = () => {
+        setIsPlaying(false);
+        setActiveChunkIndex(null);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    speakNextChunk();
+  };
+
   useEffect(() => {
-    let interval: any;
     if (isPlaying) {
-      interval = setInterval(() => {
-        setAudioProgress((prev) => {
-          const next = prev + 1;
-          // Change active chunk based on progress
-          const chunkCount = selectedVerse.chunks.length;
-          const chunkDuration = 100 / chunkCount;
-          const currentChunk = Math.floor(next / chunkDuration);
-          
-          if (currentChunk < chunkCount) {
-            setActiveChunkIndex(currentChunk);
-          } else {
-            setIsPlaying(false);
-            setActiveChunkIndex(null);
-            return 0;
-          }
-          return next;
-        });
-      }, 100);
+      speakVerse();
     } else {
-      clearInterval(interval);
+      window.speechSynthesis?.cancel();
     }
-    return () => clearInterval(interval);
+    return () => {
+      window.speechSynthesis?.cancel();
+    };
   }, [isPlaying, selectedVerse]);
 
   const handlePlay = () => {
-    setIsPlaying(!isPlaying);
-    if (!isPlaying) {
+    if (isPlaying) {
+      setIsPlaying(false);
+      setActiveChunkIndex(null);
+      setAudioProgress(0);
+      window.speechSynthesis?.cancel();
+    } else {
+      setIsPlaying(true);
       setAudioProgress(0);
       setActiveChunkIndex(0);
     }
@@ -433,7 +486,18 @@ const StudyPage = ({ onSave }: { onSave: (item: SavedItem) => void }) => {
                 <h2 className="text-3xl font-serif font-bold text-deep-navy">
                   {selectedVerse.book} {selectedVerse.chapter}:{selectedVerse.verse}
                 </h2>
-                <p className="text-deep-navy/40 text-sm mt-1">New International Version (NIV)</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedVerse.syntax_pattern?.map((p, i) => (
+                    <span key={i} className="px-2 py-0.5 bg-deep-navy/5 text-deep-navy/60 text-[10px] font-bold uppercase tracking-wider rounded border border-deep-navy/10">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-deep-navy/40 text-sm mt-2">New International Version (NIV)</p>
+                <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-soft-gold uppercase tracking-widest bg-soft-gold/5 px-3 py-1.5 rounded-lg border border-soft-gold/10 w-fit">
+                  <Sparkles size={12} />
+                  BBC Radio Anchor Voice (British English)
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <button 
@@ -570,8 +634,11 @@ const StudyPage = ({ onSave }: { onSave: (item: SavedItem) => void }) => {
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-deep-navy/20">
                   <BookOpen size={24} />
                 </div>
-                <p className="text-deep-navy/40 text-sm">
-                  본문의 구문을 클릭하여 <br /> 상세 분석을 확인하세요.
+                <h4 className="text-deep-navy font-bold mb-2">학습 가이드</h4>
+                <p className="text-deep-navy/40 text-xs leading-relaxed">
+                  1. 본문의 <span className="text-soft-gold font-bold">구문(/)</span>을 클릭하여 상세 분석과 문법 설명을 확인하세요.<br /><br />
+                  2. 하단의 <span className="text-soft-gold font-bold">단어</span>를 클릭하여 나만의 단어장에 저장할 수 있습니다.<br /><br />
+                  3. <span className="text-soft-gold font-bold">재생 버튼</span>을 눌러 영국 BBC 라디오 앵커 발음(British English)의 구문 하이라이트 동기화 반복 학습을 시작하세요. (중단하려면 다시 버튼을 클릭하세요.)
                 </p>
               </div>
             )}
@@ -704,6 +771,7 @@ const LibraryPage = ({ savedItems, onRemove }: { savedItems: SavedItem[], onRemo
 
 export default function App() {
   const [page, setPage] = useState<Page>('home');
+  const [selectedVerseId, setSelectedVerseId] = useState<string | null>(null);
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [showToast, setShowToast] = useState(false);
 
@@ -745,8 +813,8 @@ export default function App() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            {page === 'home' && <HomePage setPage={setPage} />}
-            {page === 'study' && <StudyPage onSave={saveItem} />}
+            {page === 'home' && <HomePage setPage={setPage} onSelectVerse={setSelectedVerseId} />}
+            {page === 'study' && <StudyPage initialVerseId={selectedVerseId} onSave={saveItem} />}
             {page === 'syntax' && <SyntaxHubPage />}
             {page === 'library' && <LibraryPage savedItems={savedItems} onRemove={removeItem} />}
           </motion.div>
